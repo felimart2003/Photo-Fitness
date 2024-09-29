@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Camera, Plus } from "lucide-react"
-import Link from 'next/link' // Import Link from next/link
+import { Camera } from "lucide-react"
+import Link from 'next/link'
+import { AddFoodItemForm } from './add-food-item-form'
 
 // Placeholder data
 const initialFoodItems = [
@@ -14,9 +15,17 @@ const initialFoodItems = [
   { name: 'Chicken Breast', calories: 165, carbs: 0, protein: 31, fat: 3.6 },
 ]
 
+interface FoodItem {
+  name: string
+  calories: number
+  carbs: number
+  protein: number
+  fat: number
+}
+
 export default function NutritionTracker() {
   const [user, setUser] = useState('')
-  const [foodItems, setFoodItems] = useState(initialFoodItems)
+  const [foodItems, setFoodItems] = useState<FoodItem[]>(initialFoodItems)
 
   const totalCalories = foodItems.reduce((sum, item) => sum + item.calories, 0)
   const totalCarbs = foodItems.reduce((sum, item) => sum + item.carbs, 0)
@@ -27,6 +36,10 @@ export default function NutritionTracker() {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     setUser(formData.get('username') as string)
+  }
+
+  const handleAddFoodItem = (newItem: FoodItem) => {
+    setFoodItems(prevItems => [...prevItems, newItem])
   }
 
   return (
@@ -46,7 +59,6 @@ export default function NutritionTracker() {
       ) : (
         <>
           <h1 className="text-2xl font-bold mb-4">Welcome, {user}!</h1>
-          {/* Links added below the welcome message */}
           <div className="mb-4">
             <Button>
               <Link href="/chat" className="text-white-500 mr-4">Chat with a robot diet coach!</Link>
@@ -152,9 +164,7 @@ export default function NutritionTracker() {
             </CardContent>
           </Card>
           <div className="mt-4 flex space-x-2">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add Food Item
-            </Button>
+            <AddFoodItemForm onAddItem={handleAddFoodItem} />
             <Button variant="outline">
               <Camera className="mr-2 h-4 w-4" /> Add via Camera
             </Button>
